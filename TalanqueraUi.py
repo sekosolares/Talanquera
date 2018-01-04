@@ -58,7 +58,6 @@ class CallServer:
 
 WSURL = "https://diceros.ls-sys.com/Sistema/talanquera"
 
-
 class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
     def __init__(self):
         # Con Frame:
