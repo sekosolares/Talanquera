@@ -210,8 +210,8 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
                 strUsr = str(self.txtUsuario.text())
                 strUsr = strUsr.upper()
                 response = ws.getEndDates(strUsr)
-                counterU = 0
                 counterI = 0
+                in_clause = ""
 
                 for codTarjeta, bloque in response.iteritems():
                     tipo = bloque[1]
@@ -221,16 +221,17 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
                               "InStr(1, Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1) , '-')+1) = '{4}'" \
                               .format("TEmployee", "EndDate", bloque[0][0:10], "EmployeeCode", codTarjeta)
                         SQLsUpdate.append(sql)
-                        counterU += 1
+                        in_clause += "'" + codTarjeta + "', "
                     elif tipo == '1':
                         sql = "Insert into {0}" \
-                              "(EmployeeID, EmployeeCode, EmployeeName, CardNo, pin, EmpEnable, Sex, Birthday, " \
+                              "(EmployeeID, EmployeeCode, EmployeeName, CardNo, pin, EmpEnable, Birthday, " \
                               "RegDate, EndDate, ACCESSID, Deleted, Leave, Password)" \
-                              "values({1}, {1}, {2}, {1})" \
-                              .format("TEmployee", codTarjeta, bloque[0][0:10])
+                              "values('{1}', '{1}', '{2}', '{3}', {4}, {5}, {6}, {7}, " \
+                              "Format('{8}', 'yyyy-mm-dd'), {9}, {10}, {11}, '{12}')" \
+                              .format("TEmployee", bloque[2], bloque[3].upper(), codTarjeta, 1234, 0, "Date()",
+                                      "Date()", bloque[0][0:10], 0, 0, 0, 1234)
                         SQLsUpdate.append(sql)
                         counterI += 1
-
             if modo == 'odbc':
                 """
                 connects with odbc
@@ -240,13 +241,29 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
                 conn = pyodbc.connect(str(constr), autocommit=True)
                 cur = conn.cursor()
 
+                fin = len(in_clause)
+                fin -= 2
+                in_clause = in_clause[0:fin]
+
+                verifier = "select enddate from TEmployee " \
+                           "where Mid( Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1)," \
+                           "InStr(1, Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1) , '-')+1) in ({0})" \
+                           .format(in_clause)
+
                 for sentencia in SQLsUpdate:
                     cur.execute(sentencia)
 
+                cur.execute(verifier)
+                t = tuple(cur)
+                counterU = len(t)
+
                 conn.close()
 
-                self.alert("Success!", "¡Tarjetas Actualizadas! \n {0} Actualizaciones.".format(counterU) +
-                           " \n {0} Ingresos Nuevos.".format(counterI))
+                if counterI > 0:
+                    self.alert("Success!", "¡Tarjetas Actualizadas! \n {0} Actualizaciones.".format(counterU) +
+                               " \n {0} Ingresos Nuevos.".format(counterI))
+                else:
+                    self.alert("Success!", "¡Tarjetas Actualizadas! \n {0} Actualizaciones.".format(counterU))
                 sys.exit(0)
             elif modo == 'ado':
                 """
@@ -259,13 +276,28 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
 
                 rs = win32com.client.Dispatch(r'ADODB.Recordset')
 
+                fin = len(in_clause)
+                fin -= 2
+                in_clause = in_clause[0:fin]
+
+                verifier = "select enddate from TEmployee " \
+                           "where Mid( Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1)," \
+                           "InStr(1, Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1) , '-')+1) in ({0})" \
+                           .format(in_clause)
+
                 for sentencia in SQLsUpdate:
                     rs.Open(sentencia, conn, 1, 3)
 
+                t = rs.Open(verifier, conn, 1, 3)
+                counterU = len(t)
+
                 conn.Close()
 
-                self.alert("Success!", "¡Tarjetas Actualizadas! \n {0} Actualizaciones.".format(counterU) +
-                           " \n {0} Ingresos Nuevos.".format(counterI))
+                if counterI > 0:
+                    self.alert("Success!", "¡Tarjetas Actualizadas! \n {0} Actualizaciones.".format(counterU) +
+                               " \n {0} Ingresos Nuevos.".format(counterI))
+                else:
+                    self.alert("Success!", "¡Tarjetas Actualizadas! \n {0} Actualizaciones.".format(counterU))
                 sys.exit(0)
             else:
                 pass
