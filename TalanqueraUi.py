@@ -9,13 +9,13 @@ import requests
 reload(sys)
 sys.setdefaultencoding('iso-8859-1')
 
-qtCreatorFile = "talanqueraUi.ui"  # Enter file here. extension '.ui'
+qtCreatorFile = "talanqueraUi.ui"  # Nombre del archivo UI '.ui'
 
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtCreatorFile)
 
 
 class CallServer:
-
+    # Class para requests del sistema.
     __Host = ''
     __Responce = None
 
@@ -29,7 +29,7 @@ class CallServer:
         pass
 
     def LogIn(self, userName='', userPass=''):
-
+        # Funcion que valida usuario y contraseña.
         payload = {
                 'cmd': 'logIn',
                 'usr': userName,
@@ -43,7 +43,7 @@ class CallServer:
         return jsonOBJ
 
     def getEndDates(self, userName=''):
-
+        # Funcion que devuelve el resultSet del sql del servlet.
         payload = {
                 'cmd': 'DeadEnd',
                 'usr': userName
@@ -55,22 +55,26 @@ class CallServer:
 
         return jsonOBJ
 
-
+# Url del servlet al cual se hacen los requests.
 WSURL = "https://diceros.ls-sys.com/Sistema/talanquera"
 
-# Clase principal. (Form)
+
 class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
+    # Class principal. (Form)
     def __init__(self):
         # Con Frame:
         QtGui.QMainWindow.__init__(self)
         Ui_MainWindow.__init__(self)
         self.setupUi(self)
 
-        modoglobal = 'odbc'
-        condoaddress = "diceros.ls-sys.com"
+        modoglobal = 'odbc'     # Representa la funcion que se usara para interactuar con la DB Access.
+        condoaddress = "diceros.ls-sys.com"  # Se usa para verificar conexion a internet.
 
+        # Setup del frame. Se fija el tamaño de la pantalla para deshabilitar el boton de maximizar.
         QtGui.QMainWindow.setFixedWidth(self, 684)
         QtGui.QMainWindow.setFixedHeight(self, 300)
+
+        # setParent(None) para remover elementos que se crearon pero ya no se usaran.
         self.gtxResult.setParent(None)
         self.lblOracleDB.setParent(None)
         self.txtODB.setParent(None)
@@ -144,6 +148,7 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
             conn.Close()
 
             self.pbActualizar.setDisabled(False)
+            self.pbTestADB.setDisabled(True)
 
             return True
         except Exception:
@@ -205,29 +210,28 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
                 strUsr = str(self.txtUsuario.text())
                 strUsr = strUsr.upper()
                 response = ws.getEndDates(strUsr)
-                counterU = 0
                 counterI = 0
+                in_clause = ""
 
-                '''
-                for codTarjeta, endDate in response.iteritems():
-                    sql = "Update {0} set {1} = Format('{2}', 'yyyy-mm-dd') where Trim({3}) = Trim('{4}')"\
-                        .format("TEmployee", "EndDate", endDate[0:10], "CardNo", codTarjeta)
-                    SQLsUpdate.append(sql)
-                '''
                 for codTarjeta, bloque in response.iteritems():
-                    if bloque[1] == '2':
-                        sql = "Update {0} set {1} = Format('{2}', 'yyyy-mm-dd') where Trim({3}) = Trim('{4}')"\
-                            .format("TEmployee", "EndDate", bloque[0][0:10], "CardNo", codTarjeta)
+                    tipo = bloque[1]
+                    if tipo == '2':
+                        sql = "UPDATE {0} SET {1} = Format('{2}', 'yyyy-mm-dd') " \
+                              "where Mid( Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1)," \
+                              "InStr(1, Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1) , '-')+1) = '{4}'" \
+                              .format("TEmployee", "EndDate", bloque[0][0:10], "EmployeeCode", codTarjeta)
                         SQLsUpdate.append(sql)
-                        counterU += 1
-                    elif bloque[1] == '1':
+                        in_clause += "'" + codTarjeta + "', "
+                    elif tipo == '1':
                         sql = "Insert into {0}" \
-                              "(EmployeeID, EmployeeCode, EmployeeName, CardNo, pin, EmpEnable, Sex, Birthday, " \
+                              "(EmployeeID, EmployeeCode, EmployeeName, CardNo, pin, EmpEnable, Birthday, " \
                               "RegDate, EndDate, ACCESSID, Deleted, Leave, Password)" \
-                            .format("TEmployee", "EndDate", bloque[0][0:10], "CardNo", codTarjeta)
+                              "values('{1}', '{1}', '{2}', '{3}', {4}, {5}, {6}, {7}, " \
+                              "Format('{8}', 'yyyy-mm-dd'), {9}, {10}, {11}, '{12}')" \
+                              .format("TEmployee", bloque[2], bloque[3].upper(), codTarjeta, 1234, 0, "Date()",
+                                      "Date()", bloque[0][0:10], 0, 0, 0, 1234)
                         SQLsUpdate.append(sql)
                         counterI += 1
-
             if modo == 'odbc':
                 """
                 connects with odbc
@@ -237,12 +241,29 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
                 conn = pyodbc.connect(str(constr), autocommit=True)
                 cur = conn.cursor()
 
+                fin = len(in_clause)
+                fin -= 2
+                in_clause = in_clause[0:fin]
+
+                verifier = "select enddate from TEmployee " \
+                           "where Mid( Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1)," \
+                           "InStr(1, Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1) , '-')+1) in ({0})" \
+                           .format(in_clause)
+
                 for sentencia in SQLsUpdate:
                     cur.execute(sentencia)
 
+                cur.execute(verifier)
+                t = tuple(cur)
+                counterU = len(t)
+
                 conn.close()
 
-                self.alert("Success!", "¡Tarjetas Actualizadas!")
+                if counterI > 0:
+                    self.alert("Success!", "¡Tarjetas Actualizadas! \n {0} Actualizaciones.".format(counterU) +
+                               " \n {0} Ingresos Nuevos.".format(counterI))
+                else:
+                    self.alert("Success!", "¡Tarjetas Actualizadas! \n {0} Actualizaciones.".format(counterU))
                 sys.exit(0)
             elif modo == 'ado':
                 """
@@ -255,12 +276,28 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
 
                 rs = win32com.client.Dispatch(r'ADODB.Recordset')
 
+                fin = len(in_clause)
+                fin -= 2
+                in_clause = in_clause[0:fin]
+
+                verifier = "select enddate from TEmployee " \
+                           "where Mid( Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1)," \
+                           "InStr(1, Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1) , '-')+1) in ({0})" \
+                           .format(in_clause)
+
                 for sentencia in SQLsUpdate:
                     rs.Open(sentencia, conn, 1, 3)
 
+                t = rs.Open(verifier, conn, 1, 3)
+                counterU = len(t)
+
                 conn.Close()
 
-                self.alert("Success!", "¡Tarjetas Actualizadas!")
+                if counterI > 0:
+                    self.alert("Success!", "¡Tarjetas Actualizadas! \n {0} Actualizaciones.".format(counterU) +
+                               " \n {0} Ingresos Nuevos.".format(counterI))
+                else:
+                    self.alert("Success!", "¡Tarjetas Actualizadas! \n {0} Actualizaciones.".format(counterU))
                 sys.exit(0)
             else:
                 pass
