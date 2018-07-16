@@ -397,6 +397,9 @@
       <height>191</height>
      </rect>
     </property>
+    <property name="verticalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOn</enum>
+    </property>
    </widget>
   </widget>
  </widget>
