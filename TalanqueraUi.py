@@ -53,7 +53,7 @@ class CallServer:
                 'cmd': 'DeadEnd',
                 'usr': userName
             }
-        log.write("# [func.getEndDates]:Llamada desde la función actualizar. Contacto al server con cmd=DeadEnd "
+        log.write("# [func.getEndDates]:Llamada desde la funcion actualizar. Contacto al server con cmd=DeadEnd "
                   "y usr={0}\n".format(userName))
         self.__Responce = requests.post(self.__Host, params=payload)
         log.write("# [func.getEndDates]:Se ha realizado un post al server. "
@@ -100,15 +100,15 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
         self.txtODB.setParent(None)
         self.pbTestODB.setParent(None)
         self.gtxResult.setDisabled(True)
-        log.write("# [class.TalanqueraUi]:Se deshabilitan los campos, a excepción de los campos de inicio de sesión.\n")
+        log.write("# [class.TalanqueraUi]:Se deshabilitan los campos, a excepcion de los campos de inicio de sesion.\n")
         self.massdisable(1)
 
-        log.write("# [class.TalanqueraUi]:A punto de probar conexión a internet.\n")
+        log.write("# [class.TalanqueraUi]:A punto de probar conexion a internet.\n")
         if self.testodb(condoaddress):
-            log.write("# [class.TalanqueraUi]:Conexión exitosa a internet. Procede...\n")
+            log.write("# [class.TalanqueraUi]:Conexion exitosa a internet. Procede...\n")
             self.massdisable(1)
         else:
-            log.write("# [class.TalanqueraUi]:Fallo en la conexión a internet. Deshabilitar la forma.\n")
+            log.write("# [class.TalanqueraUi]:Fallo en la conexion a internet. Deshabilitar la forma.\n")
             self.massdisable()
 
         self.pbActualizar.setDisabled(True)
@@ -125,7 +125,7 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
         log.close()
 
     def massdisable(self, paso=0):
-        log.write("# [func.massdisable]:Llamada a función correcta. Params: paso={0}\n".format(paso))
+        log.write("# [func.massdisable]:Llamada a funcion correcta. Params: paso={0}\n".format(paso))
         stat = True
         if paso == 0:
             self.pbTestODB.setDisabled(stat)
@@ -138,13 +138,13 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
             self.txtUsuario.setDisabled(stat)
             self.txtPwd.setDisabled(stat)
             self.pbLogin.setDisabled(stat)
-            log.write("# [func.massdisable]:Todo deshabilitado. No existió conexión a internet.\n")
+            log.write("# [func.massdisable]:Todo deshabilitado. No existio conexion a internet.\n")
         elif paso == 1:
             self.pbTestADB.setDisabled(stat)
             self.pbActualizar.setDisabled(stat)
             # self.txtADB.setDisabled(stat)
             self.lblAccessDB.setDisabled(stat)
-            log.write("# [func.massdisable]:La única sección habilitada es la de inicio de sesión.\n")
+            log.write("# [func.massdisable]:La unica seccion habilitada es la de inicio de sesion.\n")
         elif paso == 2:
             self.pbTestADB.setDisabled(not stat)
             self.pbActualizar.setDisabled(stat)
@@ -153,11 +153,11 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
             self.txtPwd.setDisabled(stat)
             self.pbLogin.setDisabled(stat)
             self.txtADB.setDisabled(not stat)
-            log.write("# [func.massdisable]:Inicio de sesión exitoso. "
-                      "Se habilita el botón para probar conexión a base de datos Access.\n")
+            log.write("# [func.massdisable]:Inicio de sesion exitoso. "
+                      "Se habilita el boton para probar conexion a base de datos Access.\n")
 
     def inter_access(self, destino, mod=None):
-        log.write("# [func.inter_access]:Llamada a función para interacción con Access correcta."
+        log.write("# [func.inter_access]:Llamada a funcion para interaccion con Access correcta."
                   "Params: destino={0} ; mod={1}\n".format(destino, mod))
         dato = self.txtADB.text()
         path = str(dato)
@@ -169,31 +169,31 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
             log.write("# [func.inter_access]:Se usa el modo '{0}' para conectar a Access.\n".format(destino))
             self.ado(path)
         elif destino == 'actualizar':
-            log.write("# [func.inter_access]:Se actualizará la DB Access por medio de '{0}'.\n".format(mod))
+            log.write("# [func.inter_access]:Se actualizara la DB Access por medio de '{0}'.\n".format(mod))
             self.actualizar(path, mod)
         else:
-            log.write("# [func.inter_access]:Los parámetros no fueron correctos!\n")
+            log.write("# [func.inter_access]:Los parametros no fueron correctos!\n")
             pass
 
     def alert(self, title, text):
         QtGui.QMessageBox.about(self, title, text)
 
     def ado(self, dbpath):
-        log.write("# [func.ado]:Llamada a función correcta. Params: bdpath={0}\n".format(dbpath))
+        log.write("# [func.ado]:Llamada a funcion correcta. Params: bdpath={0}\n".format(dbpath))
         try:
             """
             connect with com dispatch objs
             """
             db = dbpath
             conn = win32com.client.Dispatch(r'ADODB.Connection')
-            log.write("# [func.ado]:Conexión por iniciar... Variable conn={0}\n".format(conn))
+            log.write("# [func.ado]:Conexion por iniciar... Variable conn={0}\n".format(conn))
             dsn = ('PROVIDER = Microsoft.Jet.OLEDB.4.0;DATA SOURCE = ' + db + ';')
-            log.write("# [func.ado]:String que se abrirá para la conexión: dsn={0}\n".format(dsn))
+            log.write("# [func.ado]:String que se abrira para la conexion: dsn={0}\n".format(dsn))
             conn.Open(dsn)
             self.alert("CONNECTION SUCCESSFUL!", "¡Conexión exitosa!")
-            log.write("# [func.ado]:Conexión a Access realizada con éxito.\n")
+            log.write("# [func.ado]:Conexion a Access realizada con exito.\n")
             conn.Close()
-            log.write("# [func.ado]:Conexión a Access cerrada...\n")
+            log.write("# [func.ado]:Conexion a Access cerrada...\n")
 
             self.pbActualizar.setDisabled(False)
             self.pbTestADB.setDisabled(True)
@@ -204,39 +204,39 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
             self.alert("CONNECTION ERROR!",
                        "¡Se ha producido un error de conexión!" +
                        "\nRevise que el nombre de la base de datos Access sea correcta.")
-            log.write("# [func.ado]:Se produjo un error con la siguiente excepción:  {0}\n".format(ex))
+            log.write("# [func.ado]:Se produjo un error con la siguiente excepcion:  {0}\n".format(ex))
             return False
 
     def testodb(self, direct):  # testodb (odb = Oracle Data Base).
         # Funcion que hace ping a la direccion dada en el parametro, para establecer conexion a internet.
-        log.write("# [func.testodb]:Llamada a función correcta. Params: direct={0}\n".format(direct))
+        log.write("# [func.testodb]:Llamada a funcion correcta. Params: direct={0}\n".format(direct))
         direccion = str(direct)
         resp = (os.system("ping -n 1 " + direccion))
         log.write("# [func.testodb]:Ping realizado:  ping -n 1 {0} ; Respuesta: {1}\n".format(direccion, resp))
         if resp == 0:
-            log.write("# [func.testodb]:Existe conexión estable a la red.\n")
+            log.write("# [func.testodb]:Existe conexion estable a la red.\n")
             self.alert("Success!", "¡Conexión estable a internet!")
             return True
         else:
-            log.write("# [func.testodb]:Conexión no disponible...")
+            log.write("# [func.testodb]:Conexion no disponible...")
             self.alert("Failed!", "¡Revise su conexión a internet!")
             return False
 
     def odbc(self, dbruote):
-        log.write("# [func.odbc]:Llamada a función correcta. Params: dbroute={0}\n".format(dbruote))
+        log.write("# [func.odbc]:Llamada a funcion correcta. Params: dbroute={0}\n".format(dbruote))
         try:
             """
             connects with odbc
             """
             db = dbruote
             constr = ('Driver={Microsoft Access Driver (*.mdb, *.accdb)};Dbq=' + db)
-            log.write("# [func.odbc]:A punto de hacer conexión. String de Conexión={0}\n".format(constr))
+            log.write("# [func.odbc]:A punto de hacer conexion. String de Conexion={0}\n".format(constr))
             conn = pyodbc.connect(str(constr), autocommit=True)
-            log.write("# [func.odbc]:Conexión: conn={0}\n".format(conn))
+            log.write("# [func.odbc]:Conexion: conn={0}\n".format(conn))
             self.alert("Success!", "¡Conexión exitosa!")
-            log.write("# [func.odbc]:Conexión realizada con éxito...\n")
+            log.write("# [func.odbc]:Conexion realizada con exito...\n")
             conn.close()
-            log.write("# [func.odbc]:Conexión a Access cerrada...\n")
+            log.write("# [func.odbc]:Conexion a Access cerrada...\n")
 
             self.pbActualizar.setDisabled(False)
             self.pbTestADB.setDisabled(True)
@@ -247,7 +247,7 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
             self.alert("Failed!",
                        "¡Se ha producido un error de conexión!" +
                        "\nRevise que el nombre de la base de datos Access sea correcta.")
-            log.write("# [func.odbc]:Ha ocurrido la siguiente excepción:  {0}\n".format(e))
+            log.write("# [func.odbc]:Ha ocurrido la siguiente excepcion:  {0}\n".format(e))
             return False
 
     def login(self, usr, pwd):
@@ -262,19 +262,19 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
             self.gtxResult.setText(str(self.gtxResult.toPlainText()) + "El servidor ha respondido...\n")
             self.gtxResult.setText(str(self.gtxResult.toPlainText()) + "Evaluando respuesta del servidor...\n")
             if response['ACK'] == '1':
-                log.write("# [func.login]:Valores correctos. Inicio de Sesión exitoso...\n")
+                log.write("# [func.login]:Valores correctos. Inicio de Sesion exitoso...\n")
                 self.gtxResult.setText(str(self.gtxResult.toPlainText()) + "Correcto... Ingreso exitoso.\n")
                 self.alert("Control Condominio", "¡Usuario y Contraseña VÁLIDOS!")
-                log.write("# [func.login]:Procede a deshabilitar sección de Inicio de Sesión.\n")
+                log.write("# [func.login]:Procede a deshabilitar seccion de Inicio de Sesion.\n")
                 self.massdisable(2)
                 self.txtADB.setText(response['PDB'])
             else:
-                log.write("# [func.login]:Valores incorrectos. No Inicia Sesión...\n")
+                log.write("# [func.login]:Valores incorrectos. No Inicia Sesion...\n")
                 self.gtxResult.setText(str(self.gtxResult.toPlainText()) + "Incorrecto... Ingreso fallido.\n")
                 self.alert("Control Condominio", "¡Usuario y Contraseña NO VÁLIDOS!")
 
     def actualizar(self, dbruote, modo):
-        log.write("# [func.actualizar]:Llamada a función correcta. "
+        log.write("# [func.actualizar]:Llamada a funcion correcta. "
                   "Params: dbroute={0} ; modo={1}\n".format(dbruote, modo))
         self.gtxResult.setText("")
         try:
@@ -294,12 +294,12 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
 
                 db = dbruote
                 constr = ('Driver={Microsoft Access Driver (*.mdb, *.accdb)};Dbq=' + db)
-                log.write("# [func.actualizar]:Conexión a Access. String de conexión: {0}\n".format(constr))
+                log.write("# [func.actualizar]:Conexion a Access. String de conexion: {0}\n".format(constr))
                 conn = pyodbc.connect(str(constr), autocommit=True)
-                log.write("# [func.actualizar]:Conexión: conn={0}\n".format(conn))
+                log.write("# [func.actualizar]:Conexion: conn={0}\n".format(conn))
 
                 cur = conn.cursor()
-                log.write("# [func.actualizar]:Conexión: cur={0}\n".format(cur))
+                log.write("# [func.actualizar]:Conexion: cur={0}\n".format(cur))
                 self.gtxResult.setText(str(self.gtxResult.toPlainText()) + "Iniciando interaccion"
                                                                            " en base de datos...\n")
                 log.write("# [func.actualizar]:Inicio de bucle que ejecuta los updates/inserts...\n")
@@ -349,7 +349,7 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
                 log.write("\n# [func.actualizar]:Fin de bucle...\n")
 
                 conn.close()
-                log.write("# [func.actualizar]:Conexión a Access cerrada...\n")
+                log.write("# [func.actualizar]:Conexion a Access cerrada...\n")
 
                 if counterI > 0:
                     self.alert("Success!", "¡Tarjetas Actualizadas! \n {0} Actualizaciones.".format(counterU) +
@@ -368,9 +368,9 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
                 # Conexion con ado
                 db = dbruote
                 conn = win32com.client.Dispatch(r'ADODB.Connection')
-                log.write("# [func.actualizar]:Conexión a Access en proceso... conn={0}\n".format(conn))
+                log.write("# [func.actualizar]:Conexion a Access en proceso... conn={0}\n".format(conn))
                 dsn = ('PROVIDER = Microsoft.Jet.OLEDB.4.0;DATA SOURCE = ' + db + ';')
-                log.write("# [func.actualizar]:Conexión: dsn={0}\n".format(dsn))
+                log.write("# [func.actualizar]:Conexion: dsn={0}\n".format(dsn))
                 conn.Open(dsn)
 
                 rs = win32com.client.Dispatch(r'ADODB.Recordset')
@@ -424,7 +424,7 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
                 log.write("\n# [func.actualizar]:Fin de bucle...\n")
 
                 conn.Close()
-                log.write("# [func.actualizar]:Conexión a Access cerrada...\n")
+                log.write("# [func.actualizar]:Conexion a Access cerrada...\n")
 
                 if counterI > 0:
                     self.alert("Success!", "¡Tarjetas Actualizadas! \n {0} Actualizaciones.".format(counterU) +
@@ -443,7 +443,7 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
                 pass
         except Exception as exc:
             self.alert("Failed!", "¡Se ha producido un error al actualizar!")
-            log.write("# [func.actualizar]:Se produjo un error con la siguiente excepción:  {0}\n".format(exc))
+            log.write("# [func.actualizar]:Se produjo un error con la siguiente excepcion:  {0}\n".format(exc))
             log.write("#### Fin del log ####")
             log.close()
 
