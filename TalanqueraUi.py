@@ -4,7 +4,7 @@ import win32com.client
 import pyodbc
 import os
 import time
-from PyQt4 import QtGui, uic
+from PyQt4 import QtGui, uic, Qt
 import requests
 
 reload(sys)
@@ -36,7 +36,7 @@ class CallServer:
                 'usr': userName,
                 'pwd': userPass
             }
-        log.write("# [func.LogIn]:Llamado desde la función de Login de la forma. Valida usuario y contraseña."
+        log.write("# [func.LogIn]:Llamado desde la funcion de Login de la forma. Valida usuario y contraseña."
                   " Parametros: Usuario={0} ; Contraseña={1}\n".format(userName, userPass))
 
         self.__Responce = requests.post(self.__Host, params=payload)
@@ -114,9 +114,15 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
         self.pbActualizar.setDisabled(True)
         self.txtADB.setDisabled(True)
 
+        self.connect(self, Qt.SIGNAL('triggered()'), self.closeEvent)
         self.pbLogin.clicked.connect(lambda: self.login(str(self.txtUsuario.text()), str(self.txtPwd.text())))
         self.pbTestADB.clicked.connect(lambda: self.inter_access(modoglobal))
         self.pbActualizar.clicked.connect(lambda: self.inter_access('actualizar', modoglobal))
+
+    def closeEvent(self, event):
+        log.write("# [func.closeEvent]:Boton 'X' presonado por el usuario. Salida del programa.\n")
+        log.write("#### Fin del log ####")
+        log.close()
 
     def massdisable(self, paso=0):
         log.write("# [func.massdisable]:Llamada a función correcta. Params: paso={0}\n".format(paso))
@@ -245,9 +251,10 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
             return False
 
     def login(self, usr, pwd):
-        log.write("# [fun.login]:Botón de Login presionado. Llamada a función correcta...\n")
+        log.write("# [fun.login]:Boton de Login presionado. Llamada a funcion correcta...\n")
         self.gtxResult.setText("")
         self.gtxResult.setText(str(self.gtxResult.toPlainText()) + "Enviando datos al servidor...\n")
+
         with CallServer(WSURL) as ws:
             self.gtxResult.setText(str(self.gtxResult.toPlainText()) + "Esperando respuesta del servidor...\n")
             response = ws.LogIn(usr.upper(), pwd)
@@ -260,7 +267,7 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
                 self.alert("Control Condominio", "¡Usuario y Contraseña VÁLIDOS!")
                 log.write("# [func.login]:Procede a deshabilitar sección de Inicio de Sesión.\n")
                 self.massdisable(2)
-                # self.txtADB.setText(response['PDB'])
+                self.txtADB.setText(response['PDB'])
             else:
                 log.write("# [func.login]:Valores incorrectos. No Inicia Sesión...\n")
                 self.gtxResult.setText(str(self.gtxResult.toPlainText()) + "Incorrecto... Ingreso fallido.\n")
