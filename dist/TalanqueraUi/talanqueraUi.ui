@@ -14,7 +14,7 @@
    <bool>false</bool>
   </property>
   <property name="windowTitle">
-   <string>Actualización de Tarjetas</string>
+   <string>Control Tarjetas</string>
   </property>
   <property name="windowIcon">
    <iconset>
@@ -270,7 +270,7 @@
      </font>
     </property>
     <property name="toolTip">
-     <string>ADB Connection</string>
+     <string>Ruta de Base de Datos Acces</string>
     </property>
     <property name="styleSheet">
      <string notr="true"/>
@@ -399,6 +399,25 @@
     </property>
     <property name="verticalScrollBarPolicy">
      <enum>Qt::ScrollBarAlwaysOn</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblVersion">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>20</y>
+      <width>81</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:#9A9A9A;</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::AutoText</enum>
     </property>
    </widget>
   </widget>

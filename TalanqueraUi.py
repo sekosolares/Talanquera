@@ -62,14 +62,32 @@ class CallServer:
 
         return jsonOBJ
 
+    def updateEstado(self, sWhere='', estado=0):
+        payload = {
+            'cmd': 'cambioEstado',
+            'where': sWhere,
+            'dto': estado
+        }
+        log.write("# [func.updateEstado]:Llamada desde la funcion actualizar. Contacto al server con cmd=cambioEstado "
+                  ",where={0} y dto={1}\n".format(sWhere, estado))
+        self.__Responce = requests.post(self.__Host, params=payload)
+        log.write("# [func.updateEstado]:Se ha realizado un post al server. "
+                  "Respuesta del server: {0}\n".format(self.__Responce))
+
+        jsonOBJ = self.__Responce.json()
+
+        return jsonOBJ
+
 
 # Url del servlet al cual se hacen los requests.
 WSURL = "https://diceros.ls-sys.com/Sistema/talanquera"
 
-nombre = 'log-'  # Nombre del archivo que lleva los logs del programa.
+os.system("md Logs")
+nombre = 'Logs/log-'  # Nombre del archivo que lleva los logs del programa.
 fecha = time.strftime("%d-%m-%Y_%H-%M-%S")  # Fecha y hora para concatenar con el log.
 nombre += fecha
 texto_info = ''
+version_producto = "V 7.2018"
 
 # Abriendo el archivo log para escribir en el.
 log = open(nombre+'.txt', "w")
@@ -113,6 +131,8 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
 
         self.pbActualizar.setDisabled(True)
         self.txtADB.setDisabled(True)
+
+        self.lblVersion.setText(version_producto)
 
         self.connect(self, Qt.SIGNAL('triggered()'), self.closeEvent)
         self.pbLogin.clicked.connect(lambda: self.login(str(self.txtUsuario.text()), str(self.txtPwd.text())))
@@ -327,24 +347,32 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
                         if ubicador % 4 == 1:
                             QtGui.QApplication.processEvents()
                     elif tipo == '1':
-                        sql = "Insert into {0}" \
-                              "(EmployeeID, EmployeeCode, EmployeeName, CardNo, pin, EmpEnable, Birthday, " \
-                              "RegDate, EndDate, ACCESSID, Deleted, Leave, Password)" \
-                              "values('{1}', '{1}', '{2}', '{3}', {4}, {5}, {6}, {7}, " \
-                              "Format('{8}', 'yyyy-mm-dd'), {9}, {10}, {11}, '{12}')" \
-                              .format("TEmployee", bloque[2], bloque[3].upper(), codTarjeta, 1234, 0, "Date()",
-                                      "Date()", bloque[0][0:10], 0, 0, 0, 1234)
-                        log.write("# [func.actualizar]:Realiza insert en Access. sql=  {0}\n".format(sql))
-                        cur.execute(sql)
-                        counterI += 1
-                        ubicador += 1
-                        self.gtxResult.setText(str(self.gtxResult.toPlainText())
-                                               + "Ingresado... {0}\n".format(counterI))
-                        log.write("# [func.actualizar]:Insert en Access realizado. Numero:: {0}\n".format(counterI))
-                        for x in range(ubicador):
-                            self.gtxResult.moveCursor(QtGui.QTextCursor.Down, QtGui.QTextCursor.MoveAnchor)
-                        if ubicador % 4 == 1:
-                            QtGui.QApplication.processEvents()
+                        with CallServer(WSURL) as ws:
+                            respuesta = ws.updateEstado("empresa = {0} and agencia = {1} and casa = {2} "
+                                                        "and linea = {3}"
+                                                        .format(bloque[4], bloque[5], bloque[6], bloque[7]), 2)
+                            log.write("# [func.actualizar]:Contacto con el servidor del sistema para hacer update de "
+                                      "las tarjetas nuevas. Cambio de Nuevas a Existente. Respuesta del servidor: {0}\n"
+                                      .format(respuesta))
+                        if respuesta['ACK'] == '1':
+                            sql = "INSERT INTO [{0}]" \
+                                  "(EmployeeID, EmployeeCode, EmployeeName, CardNo, pin, EmpEnable, [Birthday], " \
+                                  "[RegDate], [EndDate], ACCESSID, Deleted, Leave, Password)" \
+                                  "values('{1}', '{1}', '{2}', '{3}', {4}, {5}, {6}, {7}, " \
+                                  "Format('{8}', 'yyyy-mm-dd'), {9}, {10}, {11}, '{12}')" \
+                                  .format("TEmployee", bloque[2], bloque[3].upper(), codTarjeta, 1234, 0, "Date()",
+                                          "Date()", bloque[0][0:10], 0, 0, 0, 1234)
+                            log.write("# [func.actualizar]:Realiza insert en Access. sql=  {0}\n".format(sql))
+                            cur.execute(sql)
+                            counterI += 1
+                            ubicador += 1
+                            self.gtxResult.setText(str(self.gtxResult.toPlainText())
+                                                   + "Ingresado... {0}\n".format(counterI))
+                            log.write("# [func.actualizar]:Insert en Access realizado. Numero:: {0}\n".format(counterI))
+                            for x in range(ubicador):
+                                self.gtxResult.moveCursor(QtGui.QTextCursor.Down, QtGui.QTextCursor.MoveAnchor)
+                            if ubicador % 4 == 1:
+                                QtGui.QApplication.processEvents()
 
                 log.write("\n# [func.actualizar]:Fin de bucle...\n")
 
@@ -364,6 +392,7 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
                 log.write("# [func.actualizar]:Linea antes de cerrar el archivo.\n#### Fin del log ####")
                 log.close()
                 sys.exit(0)
+
             elif modo == 'ado':
                 # Conexion con ado
                 db = dbruote
@@ -401,30 +430,57 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
                             self.gtxResult.moveCursor(QtGui.QTextCursor.Down, QtGui.QTextCursor.MoveAnchor)
                         if ubicador % 4 == 1:
                             QtGui.QApplication.processEvents()
+
                     elif tipo == '1':
-                        sql = "Insert into {0}" \
-                              "(EmployeeID, EmployeeCode, EmployeeName, CardNo, pin, EmpEnable, Birthday, " \
-                              "RegDate, EndDate, ACCESSID, Deleted, Leave, Password)" \
-                              "values('{1}', '{1}', '{2}', '{3}', {4}, {5}, {6}, {7}, " \
-                              "Format('{8}', 'yyyy-mm-dd'), {9}, {10}, {11}, '{12}')" \
-                              .format("TEmployee", bloque[2], bloque[3].upper(), codTarjeta, 1234, 0, "Date()",
-                                      "Date()", bloque[0][0:10], 0, 0, 0, 1234)
-                        log.write("# [func.actualizar]:Realiza insert en Access. sql=  {0}\n".format(sql))
-                        rs.Open(sql, conn, 1, 3)
-                        counterI += 1
-                        ubicador += 1
-                        self.gtxResult.setText(str(self.gtxResult.toPlainText())
-                                               + "Ingresado... {0}\n".format(counterI))
-                        log.write("# [func.actualizar]:Insert en Access realizado. Numero:: {0}\n".format(counterI))
-                        for x in range(ubicador):
-                            self.gtxResult.moveCursor(QtGui.QTextCursor.Down, QtGui.QTextCursor.MoveAnchor)
-                        if ubicador % 4 == 1:
-                            QtGui.QApplication.processEvents()
+                        # Conexion con odbc para los inserts, pues con ADO parece haber un error de sintaxis.
+
+                        with CallServer(WSURL) as ws:
+                            respuesta = ws.updateEstado("empresa = {0} and agencia = {1} and casa = {2} "
+                                                        "and linea = {3}"
+                                                        .format(bloque[4], bloque[5], bloque[6], bloque[7]), 2)
+                            log.write("# [func.actualizar]:Contacto con el servidor del sistema para hacer update de "
+                                      "las tarjetas nuevas. Cambio de Nuevas a Existente. Respuesta del servidor: {0}\n"
+                                      .format(respuesta))
+
+                        if respuesta['ACK'] == '1':
+                            db2 = dbruote
+                            constr = ('Driver={Microsoft Access Driver (*.mdb, *.accdb)};Dbq=' + db2)
+                            log.write("# [func.actualizar]:Conexion a Access con ODBC para inserts."
+                                      " String de conexion: {0}\n".format(constr))
+                            conn2 = pyodbc.connect(str(constr), autocommit=True)
+                            log.write("# [func.actualizar]:Conexion: conn={0}\n".format(conn2))
+
+                            cur = conn2.cursor()
+                            log.write("# [func.actualizar]:Conexion: cur={0}\n".format(cur))
+                            sql = "INSERT INTO [{0}]" \
+                                  "(EmployeeID, EmployeeCode, EmployeeName, CardNo, pin, EmpEnable, [Birthday], " \
+                                  "[RegDate], [EndDate], ACCESSID, Deleted, Leave, Password)" \
+                                  "values('{1}', '{1}', '{2}', '{3}', {4}, {5}, {6}, {7}, " \
+                                  "Format('{8}', 'yyyy-mm-dd'), {9}, {10}, {11}, '{12}')" \
+                                .format("TEmployee", bloque[2], bloque[3].upper(), codTarjeta, 1234, 0, "Date()",
+                                        "Date()", bloque[0][0:10], 0, 0, 0, 1234)
+
+                            log.write("# [func.actualizar]:Realiza insert en Access (ODBC dentro de ADO). sql=  {0}\n"
+                                      .format(sql))
+                            cur.execute(sql)
+                            counterI += 1
+                            ubicador += 1
+                            self.gtxResult.setText(str(self.gtxResult.toPlainText())
+                                                   + "Ingresado... {0}\n".format(counterI))
+                            log.write("# [func.actualizar]:Insert en Access realizado. Numero:: {0}\n".format(counterI))
+                            for x in range(ubicador):
+                                self.gtxResult.moveCursor(QtGui.QTextCursor.Down, QtGui.QTextCursor.MoveAnchor)
+                            if ubicador % 4 == 1:
+                                QtGui.QApplication.processEvents()
+                            conn2.close()
+                        else:
+                            log.write("# [func.actualizar]:La respuesta del servidor fue {0}, por lo que no se "
+                                      "hicieron los inserts correspondientes\n"
+                                      .format(respuesta))
 
                 log.write("\n# [func.actualizar]:Fin de bucle...\n")
-
                 conn.Close()
-                log.write("# [func.actualizar]:Conexion a Access cerrada...\n")
+                log.write("# [func.actualizar]:Conexiones a Access cerradas...\n")
 
                 if counterI > 0:
                     self.alert("Success!", "¡Tarjetas Actualizadas! \n {0} Actualizaciones.".format(counterU) +
