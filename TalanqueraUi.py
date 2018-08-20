@@ -10,6 +10,8 @@ import requests
 reload(sys)
 sys.setdefaultencoding('iso-8859-1')
 
+# Producto: V 8.2018.0
+
 qtCreatorFile = "talanqueraUi.ui"  # Nombre del archivo UI '.ui'
 
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtCreatorFile)
@@ -87,7 +89,7 @@ nombre = 'Logs/log-'  # Nombre del archivo que lleva los logs del programa.
 fecha = time.strftime("%d-%m-%Y_%H-%M-%S")  # Fecha y hora para concatenar con el log.
 nombre += fecha
 texto_info = ''
-version_producto = "V 7.2018.1"
+version_producto = "V 8.2018.0"
 
 # Abriendo el archivo log para escribir en el.
 log = open(nombre+'.txt', "w")
@@ -418,7 +420,7 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
                         sql = "UPDATE {0} SET {1} = Format('{2}', 'yyyy-mm-dd') " \
                               "where Mid( Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1)," \
                               "InStr(1, Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1) , '-')+1) = '{4}'" \
-                              .format("TEmployee", "EndDate", bloque[0][0:10], "EmployeeCode", codTarjeta)
+                              .format("TEmployee", "EndDate", bloque[0][0:10], "EmployeeCode", bloque[8])
                         log.write("# [func.actualizar]:Realiza update en Access. sql= {0}\n".format(sql))
                         rs.Open(sql, conn, 1, 3)
                         counterU += 1
@@ -442,9 +444,9 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
 
                         if respuesta['ACK'] == '1':
                             sql = "INSERT INTO [{0}]" \
-                                  "(EmployeeCode, EmployeeName, CardNo)" \
+                                  "(EmployeeCode, EmployeeName, CardNo, ACCESSID)" \
                                   "VALUES" \
-                                  "('{1}', '{2}', '{3}')" \
+                                  "('{1}', '{2}', '{3}', 1)" \
                                 .format("TEmployee", bloque[2], bloque[3].upper(), codTarjeta)
                             log.write("# [func.actualizar]:Realiza insert en Access. sql=  {0}\n".format(sql))
                             rs.Open(sql, conn, 1, 3)
@@ -452,7 +454,7 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
                                   " RegDate = Format('{2}', 'yyyy-mm-dd'), Birthday = Format('{2}', 'yyyy-mm-dd')" \
                                   "where Mid( Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1)," \
                                   "InStr(1, Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1) , '-')+1) = '{4}'" \
-                                .format("TEmployee", "EndDate", bloque[0][0:10], "EmployeeCode", codTarjeta)
+                                .format("TEmployee", "EndDate", bloque[0][0:10], "EmployeeCode", bloque[8])
                             rs.Open(sql, conn, 1, 3)
                             counterI += 1
                             ubicador += 1
