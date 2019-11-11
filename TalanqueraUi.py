@@ -30,14 +30,14 @@ class CallServer:
         pass
 
     def LogIn(self, userName='', userPass=''):
-        # Funcion que valida usuario y contraseña.
+        # Funcion que valida usuario y contraseï¿½a.
         payload = {
                 'cmd': 'logIn',
                 'usr': userName,
                 'pwd': userPass
             }
-        log.write("# [func.LogIn]:Llamado desde la funcion de Login de la forma. Valida usuario y contraseña."
-                  " Parametros: Usuario={0} ; Contraseña={1}\n".format(userName, userPass))
+        log.write("# [func.LogIn]:Llamado desde la funcion de Login de la forma. Valida usuario y contraseï¿½a."
+                  " Parametros: Usuario={0} ; Contraseï¿½a={1}\n".format(userName, userPass))
 
         self.__Responce = requests.post(self.__Host, params=payload)
         log.write("# [func.LogIn]:Se ha realizado un post al server. Respuesta del server:"
@@ -87,7 +87,7 @@ nombre = 'Logs/log-'  # Nombre del archivo que lleva los logs del programa.
 fecha = time.strftime("%d-%m-%Y_%H-%M-%S")  # Fecha y hora para concatenar con el log.
 nombre += fecha
 texto_info = ''
-version_producto = "V 7.2018.1"
+version_producto = "V 11.2019.1"
 
 # Abriendo el archivo log para escribir en el.
 log = open(nombre+'.txt', "w")
@@ -104,7 +104,7 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
         modoglobal = 'ado'     # Representa la funcion que se usara para interactuar con la DB Access.
         condoaddress = "diceros.ls-sys.com"  # Se usa para verificar conexion a internet.
 
-        # Setup del frame. Se fija el tamaño de la pantalla para deshabilitar el boton de maximizar.
+        # Setup del frame. Se fija el tamaï¿½o de la pantalla para deshabilitar el boton de maximizar.
         QtGui.QMainWindow.setFixedWidth(self, 684)  # Ancho del form.
         # QtGui.QMainWindow.setFixedHeight(self, 300)  # Alto del form.
         QtGui.QMainWindow.setFixedHeight(self, 490)  # Alto del form.
@@ -210,7 +210,7 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
             dsn = ('PROVIDER = Microsoft.Jet.OLEDB.4.0;DATA SOURCE = ' + db + ';')
             log.write("# [func.ado]:String que se abrira para la conexion: dsn={0}\n".format(dsn))
             conn.Open(dsn)
-            self.alert("CONNECTION SUCCESSFUL!", "¡Conexión exitosa!")
+            self.alert("CONNECTION SUCCESSFUL!", "ï¿½Conexiï¿½n exitosa!")
             log.write("# [func.ado]:Conexion a Access realizada con exito.\n")
             conn.Close()
             log.write("# [func.ado]:Conexion a Access cerrada...\n")
@@ -222,7 +222,7 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
             return True
         except Exception as ex:
             self.alert("CONNECTION ERROR!",
-                       "¡Se ha producido un error de conexión!" +
+                       "ï¿½Se ha producido un error de conexiï¿½n!" +
                        "\nRevise que el nombre de la base de datos Access sea correcta.")
             log.write("# [func.ado]:Se produjo un error con la siguiente excepcion:  {0}\n".format(ex))
             return False
@@ -235,11 +235,11 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
         log.write("# [func.testodb]:Ping realizado:  ping -n 1 {0} ; Respuesta: {1}\n".format(direccion, resp))
         if resp == 0:
             log.write("# [func.testodb]:Existe conexion estable a la red.\n")
-            self.alert("Success!", "¡Conexión estable a internet!")
+            self.alert("Success!", "ï¿½Conexiï¿½n estable a internet!")
             return True
         else:
             log.write("# [func.testodb]:Conexion no disponible...")
-            self.alert("Failed!", "¡Revise su conexión a internet!")
+            self.alert("Failed!", "ï¿½Revise su conexiï¿½n a internet!")
             return False
 
     def odbc(self, dbruote):
@@ -253,7 +253,7 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
             log.write("# [func.odbc]:A punto de hacer conexion. String de Conexion={0}\n".format(constr))
             conn = pyodbc.connect(str(constr), autocommit=True)
             log.write("# [func.odbc]:Conexion: conn={0}\n".format(conn))
-            self.alert("Success!", "¡Conexión exitosa!")
+            self.alert("Success!", "ï¿½Conexiï¿½n exitosa!")
             log.write("# [func.odbc]:Conexion realizada con exito...\n")
             conn.close()
             log.write("# [func.odbc]:Conexion a Access cerrada...\n")
@@ -265,7 +265,7 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
             return True
         except Exception as e:
             self.alert("Failed!",
-                       "¡Se ha producido un error de conexión!" +
+                       "ï¿½Se ha producido un error de conexiï¿½n!" +
                        "\nRevise que el nombre de la base de datos Access sea correcta.")
             log.write("# [func.odbc]:Ha ocurrido la siguiente excepcion:  {0}\n".format(e))
             return False
@@ -284,14 +284,14 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
             if response['ACK'] == '1':
                 log.write("# [func.login]:Valores correctos. Inicio de Sesion exitoso...\n")
                 self.gtxResult.setText(str(self.gtxResult.toPlainText()) + "Correcto... Ingreso exitoso.\n")
-                self.alert("Control Condominio", "¡Usuario y Contraseña VÁLIDOS!")
+                self.alert("Control Condominio", "ï¿½Usuario y Contraseï¿½a Vï¿½LIDOS!")
                 log.write("# [func.login]:Procede a deshabilitar seccion de Inicio de Sesion.\n")
                 self.massdisable(2)
                 self.txtADB.setText(response['PDB'])
             else:
                 log.write("# [func.login]:Valores incorrectos. No Inicia Sesion...\n")
                 self.gtxResult.setText(str(self.gtxResult.toPlainText()) + "Incorrecto... Ingreso fallido.\n")
-                self.alert("Control Condominio", "¡Usuario y Contraseña NO VÁLIDOS!")
+                self.alert("Control Condominio", "ï¿½Usuario y Contraseï¿½a NO Vï¿½LIDOS!")
 
     def actualizar(self, dbruote, modo):
         log.write("# [func.actualizar]:Llamada a funcion correcta. "
@@ -332,8 +332,8 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
 
                     if tipo == '2':
                         sql = "UPDATE {0} SET {1} = Format('{2}', 'yyyy-mm-dd') " \
-                              "where Mid( Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1)," \
-                              "InStr(1, Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1) , '-')+1) = '{4}'" \
+                              "where ( Mid( Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1)," \
+                              "InStr(1, Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1) , '-')+1) = '{4}' or CardNo = '{4}' )" \
                               .format("TEmployee", "EndDate", bloque[0][0:10], "EmployeeCode", codTarjeta)
                         log.write("# [func.actualizar]:Realiza update en Access. sql= {0}\n".format(sql))
                         cur.execute(sql)
@@ -380,12 +380,12 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
                 log.write("# [func.actualizar]:Conexion a Access cerrada...\n")
 
                 if counterI > 0:
-                    self.alert("Success!", "¡Tarjetas Actualizadas! \n {0} Actualizaciones.".format(counterU) +
+                    self.alert("Success!", "ï¿½Tarjetas Actualizadas! \n {0} Actualizaciones.".format(counterU) +
                                " \n {0} Ingresos Nuevos.".format(counterI))
                     log.write("# [func.actualizar]:Se insertaron nuevos registros. Registros nuevos: {0}  ;  "
                               "Actualizaciones: {1}\n".format(counterI, counterU))
                 else:
-                    self.alert("Success!", "¡Tarjetas Actualizadas! \n {0} Actualizaciones.".format(counterU))
+                    self.alert("Success!", "ï¿½Tarjetas Actualizadas! \n {0} Actualizaciones.".format(counterU))
                     log.write("# [func.actualizar]:Solo hubieron actualizaciones."
                               " Actualizaciones: {0}\n".format(counterU))
 
@@ -416,8 +416,8 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
 
                     if tipo == '2':
                         sql = "UPDATE {0} SET {1} = Format('{2}', 'yyyy-mm-dd') " \
-                              "where Mid( Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1)," \
-                              "InStr(1, Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1) , '-')+1) = '{4}'" \
+                              "where ( Mid( Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1)," \
+                              "InStr(1, Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1) , '-')+1) = '{4}' or CardNo = '{4}' )" \
                               .format("TEmployee", "EndDate", bloque[0][0:10], "EmployeeCode", codTarjeta)
                         log.write("# [func.actualizar]:Realiza update en Access. sql= {0}\n".format(sql))
                         rs.Open(sql, conn, 1, 3)
@@ -450,8 +450,8 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
                             rs.Open(sql, conn, 1, 3)
                             sql = "UPDATE {0} SET {1} = Format('{2}', 'yyyy-mm-dd')," \
                                   " RegDate = Format('{2}', 'yyyy-mm-dd'), Birthday = Format('{2}', 'yyyy-mm-dd')" \
-                                  "where Mid( Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1)," \
-                                  "InStr(1, Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1) , '-')+1) = '{4}'" \
+                                  "where ( Mid( Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1)," \
+                                  "InStr(1, Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1) , '-')+1) = '{4}' or CardNo = '{4}' )" \
                                 .format("TEmployee", "EndDate", bloque[0][0:10], "EmployeeCode", codTarjeta)
                             rs.Open(sql, conn, 1, 3)
                             counterI += 1
@@ -470,12 +470,12 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
                 log.write("# [func.actualizar]:Conexion a Access cerrada...\n")
 
                 if counterI > 0:
-                    self.alert("Success!", "¡Tarjetas Actualizadas! \n {0} Actualizaciones.".format(counterU) +
+                    self.alert("Success!", "ï¿½Tarjetas Actualizadas! \n {0} Actualizaciones.".format(counterU) +
                                " \n {0} Ingresos Nuevos.".format(counterI))
                     log.write("# [func.actualizar]:Se insertaron nuevos registros. Registros nuevos: {0}  ;  "
                               "Actualizaciones: {1}\n".format(counterI, counterU))
                 else:
-                    self.alert("Success!", "¡Tarjetas Actualizadas! \n {0} Actualizaciones.".format(counterU))
+                    self.alert("Success!", "ï¿½Tarjetas Actualizadas! \n {0} Actualizaciones.".format(counterU))
                     log.write("# [func.actualizar]:Solo hubieron actualizaciones."
                               " Actualizaciones: {0}\n".format(counterU))
 
@@ -485,7 +485,7 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
             else:
                 pass
         except Exception as exc:
-            self.alert("Failed!", "¡Se ha producido un error al actualizar!")
+            self.alert("Failed!", "ï¿½Se ha producido un error al actualizar!")
             log.write("# [func.actualizar]:Se produjo un error con la siguiente excepcion:  {0}\n".format(exc))
             log.write("#### Fin del log ####")
             log.close()
