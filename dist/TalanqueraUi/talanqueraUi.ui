@@ -77,7 +77,7 @@
      <cursorShape>PointingHandCursor</cursorShape>
     </property>
     <property name="toolTip">
-     <string>Validar Usuario y Contraseña</string>
+     <string>Validar Usuario y ContraseÃ±a</string>
     </property>
     <property name="text">
      <string>Login</string>

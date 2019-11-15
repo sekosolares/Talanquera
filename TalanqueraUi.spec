@@ -1,10 +1,10 @@
-# -*- mode: python -*-
+# -*- mode: python ; coding: iso-8859-1 -*-
 
 block_cipher = None
 
 
 a = Analysis(['TalanqueraUi.py'],
-             pathex=['C:\\Users\\AXEL\\Documents\\PyQtProj\\Talanquera'],
+             pathex=['C:\\Users\\Administrator\\Documents\\Talanquera\\Talanquera'],
              binaries=[],
              datas=[('talanqueraUi.ui', '.'), ('LS.ico', '.')],
              hiddenimports=[],
