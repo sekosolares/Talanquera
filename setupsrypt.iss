@@ -7,8 +7,8 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{0A0A9D72-B686-47E0-A81D-52376FC18305}
 AppName=Control Tarjetas
-AppVersion=11.2021.1
-AppVerName=Control Tarjetas 11.2021.1
+AppVersion=06.2021.1
+AppVerName=Control Tarjetas 06.2021.1
 AppPublisher=LS-SYS
 AppPublisherURL=http://www.ls-sys.com/
 AppSupportURL=http://www.ls-sys.com/
