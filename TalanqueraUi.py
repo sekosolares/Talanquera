@@ -4,6 +4,7 @@ import win32com.client
 import pyodbc
 import os
 import time
+import psutil
 from PyQt4 import QtGui, uic, Qt
 import requests
 
@@ -88,7 +89,7 @@ nombre = 'Logs/log-'  # Nombre del archivo que lleva los logs del programa.
 fecha = time.strftime("%d-%m-%Y_%H-%M-%S")
 nombre += fecha
 texto_info = ''
-version_producto = "V 11.2019.1"
+version_producto = "V 06.2021.1"
 
 # Abriendo el archivo log para escribir en el.
 log = open(nombre+'.txt', "w")
@@ -253,6 +254,16 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
         log.write(
             "# [func.testodb]:Llamada a funcion correcta. Params: direct={0}\n".format(direct))
         direccion = str(direct)
+        programa_local_tarjetas = "AccessMain.exe" in (
+            i.name() for i in psutil.process_iter())
+        log.write(
+            "# [func.testodb]: Validando si el programa de las tarjetas (mundito) esta corriendo.\n")
+        if programa_local_tarjetas:
+            log.write(
+                "# [func.testodb]: Programa Local corriendo. No se puede proceder sin cerrarlo antes.\n")
+            self.alert(
+                "Failed!", "Debe cerrar el programa de las tarjetas para poder continuar!")
+            return False
         resp = (os.system("ping -n 1 " + direccion))
         log.write(
             "# [func.testodb]:Ping realizado:  ping -n 1 {0} ; Respuesta: {1}\n".format(direccion, resp))
