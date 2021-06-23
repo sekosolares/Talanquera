@@ -4,7 +4,7 @@ import win32com.client
 import pyodbc
 import os
 import time
-import psutil
+# import psutil
 from PyQt4 import QtGui, uic, Qt
 import requests
 
@@ -254,15 +254,22 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
         log.write(
             "# [func.testodb]:Llamada a funcion correcta. Params: direct={0}\n".format(direct))
         direccion = str(direct)
-        programa_local_tarjetas = "AccessMain.exe" in (
-            i.name() for i in psutil.process_iter())
-        log.write(
-            "# [func.testodb]: Validando si el programa de las tarjetas (mundito) esta corriendo.\n")
-        if programa_local_tarjetas:
-            log.write(
-                "# [func.testodb]: Programa Local corriendo. No se puede proceder sin cerrarlo antes.\n")
-            self.alert(
-                "Failed!", "Debe cerrar el programa de las tarjetas para poder continuar!")
+        process_to_find = "code.exe"
+        os.system('tasklist /fi "ImageName eq {0}" /fo csv > process.txt'.format(process_to_find))
+        log.write("# [func.testodb]:Archivo con informacion del tasklist creado.\n")
+        process_file = open("process.txt", "r")
+        text = process_file.read()
+        text = text.upper()
+        log.write("# [func.testodb]:Texto en el archivo: {0}.\n".format(text))
+        process_found = process_to_find.upper() in text
+        log.write("# [func.testodb]:Proceso corriendo? {0}.\n".format(process_found))
+        process_file.close()
+        log.write("# [func.testodb]:Cerrando archivo...\n")
+        os.system("del process.txt")
+        log.write("# [func.testodb]:Archivo eliminado.\n")
+        if process_found:
+            log.write("# [func.testodb]:El proceso {0} se encuentra corriendo. No se puede continuar.\n")
+            self.alert("Failed!", "Debe cerrar la aplicacion de las tarjetas para poder continuar.")
             return False
         resp = (os.system("ping -n 1 " + direccion))
         log.write(
