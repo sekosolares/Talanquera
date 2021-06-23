@@ -254,7 +254,7 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
         log.write(
             "# [func.testodb]:Llamada a funcion correcta. Params: direct={0}\n".format(direct))
         direccion = str(direct)
-        process_to_find = "code.exe"
+        process_to_find = "AccessMain.exe"
         os.system('tasklist /fi "ImageName eq {0}" /fo csv > process.txt'.format(process_to_find))
         log.write("# [func.testodb]:Archivo con informacion del tasklist creado.\n")
         process_file = open("process.txt", "r")
