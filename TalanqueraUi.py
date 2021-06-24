@@ -89,7 +89,7 @@ nombre = 'Logs/log-'  # Nombre del archivo que lleva los logs del programa.
 fecha = time.strftime("%d-%m-%Y_%H-%M-%S")
 nombre += fecha
 texto_info = ''
-version_producto = "V 06.2021.3"
+version_producto = "V 06.2021.4"
 
 # Abriendo el archivo log para escribir en el.
 log = open(nombre+'.txt', "w")
@@ -256,7 +256,8 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
         direccion = str(direct)
         process_to_find = "AccessMain.exe"
         os.system(
-            'tasklist /fi "ImageName eq {0}" /fo csv > process.txt'.format(process_to_find))
+            'tasklist /fi "ImageName eq {0}" /fo csv > process.txt'
+            .format(process_to_find))
         log.write(
             "# [func.testodb]:Archivo con informacion del tasklist creado.\n")
         process_file = open("process.txt", "r")
@@ -270,6 +271,8 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
         log.write("# [func.testodb]:Cerrando archivo...\n")
         os.system("del process.txt")
         log.write("# [func.testodb]:Archivo eliminado.\n")
+        self.alert(
+            "INFO", "Recuerde cerrar el programa de las tarjetas antes de correr este proceso.")
         if process_found:
             log.write(
                 "# [func.testodb]:El proceso {0} se encuentra corriendo. No se puede continuar.\n")
