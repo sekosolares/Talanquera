@@ -89,7 +89,7 @@ nombre = 'Logs/log-'  # Nombre del archivo que lleva los logs del programa.
 fecha = time.strftime("%d-%m-%Y_%H-%M-%S")
 nombre += fecha
 texto_info = ''
-version_producto = "V 06.2021.1"
+version_producto = "V 06.2021.3"
 
 # Abriendo el archivo log para escribir en el.
 log = open(nombre+'.txt', "w")
@@ -255,21 +255,26 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
             "# [func.testodb]:Llamada a funcion correcta. Params: direct={0}\n".format(direct))
         direccion = str(direct)
         process_to_find = "AccessMain.exe"
-        os.system('tasklist /fi "ImageName eq {0}" /fo csv > process.txt'.format(process_to_find))
-        log.write("# [func.testodb]:Archivo con informacion del tasklist creado.\n")
+        os.system(
+            'tasklist /fi "ImageName eq {0}" /fo csv > process.txt'.format(process_to_find))
+        log.write(
+            "# [func.testodb]:Archivo con informacion del tasklist creado.\n")
         process_file = open("process.txt", "r")
         text = process_file.read()
         text = text.upper()
         log.write("# [func.testodb]:Texto en el archivo: {0}.\n".format(text))
         process_found = process_to_find.upper() in text
-        log.write("# [func.testodb]:Proceso corriendo? {0}.\n".format(process_found))
+        log.write(
+            "# [func.testodb]:Proceso corriendo? {0}.\n".format(process_found))
         process_file.close()
         log.write("# [func.testodb]:Cerrando archivo...\n")
         os.system("del process.txt")
         log.write("# [func.testodb]:Archivo eliminado.\n")
         if process_found:
-            log.write("# [func.testodb]:El proceso {0} se encuentra corriendo. No se puede continuar.\n")
-            self.alert("Failed!", "Debe cerrar la aplicacion de las tarjetas para poder continuar.")
+            log.write(
+                "# [func.testodb]:El proceso {0} se encuentra corriendo. No se puede continuar.\n")
+            self.alert(
+                "Failed!", "Debe cerrar la aplicacion de las tarjetas para poder continuar.")
             return False
         resp = (os.system("ping -n 1 " + direccion))
         log.write(
