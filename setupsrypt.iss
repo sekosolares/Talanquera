@@ -7,7 +7,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{0A0A9D72-B686-47E0-A81D-52376FC18305}}
 AppName=Control Tarjetas
-AppVersion=07.2021.1
+AppVersion=07.2021.2
 AppVerName=ControlTarjetas
 AppPublisher=LS-SYS
 AppPublisherURL=http://www.ls-sys.com/
@@ -16,7 +16,7 @@ AppUpdatesURL=http://www.ls-sys.com/
 DefaultDirName={pf}\Control Tarjetas
 DisableProgramGroupPage=yes
 OutputDir=C:\Users\Administrator\Documents\Talanquera\Talanquera
-OutputBaseFilename=Installer_V.07.2021.1
+OutputBaseFilename=Installer_V.07.2021.2
 SetupIconFile=C:\Users\Administrator\Documents\Talanquera\Talanquera\LS.ico
 Password=Elefante.2018*
 Compression=lzma
