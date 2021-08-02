@@ -89,7 +89,7 @@ nombre = 'Logs/log-'  # Nombre del archivo que lleva los logs del programa.
 fecha = time.strftime("%d-%m-%Y_%H-%M-%S")
 nombre += fecha
 texto_info = ''
-version_producto = "V 06.2021.4"
+version_producto = "V 07.2021.1"
 
 # Abriendo el archivo log para escribir en el.
 log = open(nombre+'.txt', "w")
@@ -406,8 +406,8 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
                     if tipo == '2':
                         sql = "UPDATE {0} SET {1} = Format('{2}', 'yyyy-mm-dd') " \
                               "where ( Mid( Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1)," \
-                              "InStr(1, Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1) , '-')+1) = '{4}' or CardNo = '{4}' )" \
-                              .format("TEmployee", "EndDate", bloque[0][0:10], "EmployeeCode", codTarjeta)
+                              "InStr(1, Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1) , '-')+1) = '{4}' or Replace(LTrim(Replace(cardno,'0',' ')),' ','0') = '{4}' )" \
+                              .format("TEmployee", "EndDate", bloque[0][0:10], "EmployeeCode", codTarjeta.lstrip('0'))
                         log.write(
                             "# [func.actualizar]:Realiza update en Access. sql= {0}\n".format(sql))
                         cur.execute(sql)
@@ -502,8 +502,8 @@ class TalanqueraUi(QtGui.QMainWindow, Ui_MainWindow):
                     if tipo == '2':
                         sql = "UPDATE {0} SET {1} = Format('{2}', 'yyyy-mm-dd') " \
                               "where ( Mid( Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1)," \
-                              "InStr(1, Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1) , '-')+1) = '{4}' or CardNo = '{4}' )" \
-                              .format("TEmployee", "EndDate", bloque[0][0:10], "EmployeeCode", codTarjeta)
+                              "InStr(1, Mid([EmployeeCode], InStr(1, [EmployeeCode], '-')+1) , '-')+1) = '{4}' or Replace(LTrim(Replace(cardno,'0',' ')),' ','0') = '{4}' )" \
+                              .format("TEmployee", "EndDate", bloque[0][0:10], "EmployeeCode", codTarjeta.lstrip('0'))
                         log.write(
                             "# [func.actualizar]:Realiza update en Access. sql= {0}\n".format(sql))
                         rs.Open(sql, conn, 1, 3)
